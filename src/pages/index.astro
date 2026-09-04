@@ -1,22 +1,166 @@
 ---
-import PostList from '../components/PostList.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import PostCard from '../components/PostCard.astro';
+import { AUTHOR, SITE_DESCRIPTION, SITE_TITLE, SOCIAL } from '../consts';
 import Base from '../layouts/Base.astro';
 import { getPosts } from '../lib/posts';
 
 const posts = await getPosts();
+const [latest, ...rest] = posts;
 ---
 
 <Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
-	<div class="container">
-		<p class="intro">{SITE_DESCRIPTION}</p>
-		<PostList posts={posts} />
+	<div class="container home">
+		<section class="profile">
+			<div class="avatar" aria-hidden="true">{AUTHOR.slice(0, 1)}</div>
+			<div class="profile-body">
+				<h1>{AUTHOR}의 개발일지</h1>
+				<p class="tagline">배운 것, 만든 것, 삽질한 것. Astro · Next.js · Python 에이전트를 만들며 기록합니다.</p>
+				<div class="links">
+					{SOCIAL.github && <a class="btn primary" href={SOCIAL.github}>GitHub</a>}
+					{SOCIAL.portfolio && <a class="btn" href={SOCIAL.portfolio}>포트폴리오</a>}
+					<a class="btn" href="/rss.xml">RSS</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="posts">
+			<div class="section-head">
+				<h2>최근 글</h2>
+				<a class="muted" href="/tags/">태그로 보기 →</a>
+			</div>
+
+			{
+				posts.length === 0 ? (
+					<p class="muted">아직 글이 없습니다.</p>
+				) : (
+					<>
+						<PostCard post={latest} featured />
+						{rest.length > 0 && (
+							<div class="grid">
+								{rest.map((post) => (
+									<PostCard post={post} />
+								))}
+							</div>
+						)}
+					</>
+				)
+			}
+		</section>
 	</div>
 </Base>
 
 <style>
-	.intro {
-		margin: 0 0 var(--space-5);
+	/* 홈은 본문보다 조금 넓게 (카드 2열) */
+	.home {
+		max-width: 62rem;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-6);
+	}
+
+	.profile {
+		display: flex;
+		align-items: center;
+		gap: var(--space-4);
+	}
+	.avatar {
+		flex-shrink: 0;
+		width: 5.5rem;
+		height: 5.5rem;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.75rem;
+		font-weight: 800;
 		color: var(--fg-muted);
+		background: var(--bg-subtle);
+		border: 1px solid var(--border);
+	}
+	.profile-body {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+	.profile h1 {
+		font-size: 1.875rem;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+	}
+	.tagline {
+		margin: 0;
+		color: var(--fg-muted);
+	}
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		margin-top: var(--space-1);
+	}
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		height: 2.125rem;
+		padding: 0 0.875rem;
+		border-radius: var(--radius);
+		border: 1px solid var(--border);
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--fg);
+	}
+	.btn:hover {
+		text-decoration: none;
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	.btn.primary {
+		background: var(--fg);
+		border-color: var(--fg);
+		color: var(--bg);
+	}
+	.btn.primary:hover {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: #fff;
+	}
+
+	.posts {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+	}
+	.section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		margin-bottom: var(--space-1);
+	}
+	.section-head h2 {
+		font-size: 1.25rem;
+	}
+	.section-head a {
+		font-size: 0.875rem;
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--space-3);
+	}
+
+	@media (max-width: 720px) {
+		.grid {
+			grid-template-columns: 1fr;
+		}
+		.profile {
+			align-items: flex-start;
+		}
+		.avatar {
+			width: 4rem;
+			height: 4rem;
+			font-size: 1.375rem;
+		}
+		.profile h1 {
+			font-size: 1.5rem;
+		}
 	}
 </style>
