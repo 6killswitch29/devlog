@@ -50,8 +50,8 @@ src/
 ├── layouts/
 │   ├── Base.astro       # 공통 셸 (head + Header + main + Footer). 모든 페이지가 이걸 감싼다
 │   └── BlogPost.astro   # 글 페이지: 글 헤더 → TOC → .prose 본문 → 시리즈 → 이전/다음
-├── pages/               # index(글 목록), blog/[...slug], tags/index, tags/[tag], about, rss.xml.js
-├── components/          # BaseHead, Header, Footer, ThemeToggle, PostList, Tag, TableOfContents, PostNav, SeriesList, FormattedDate
+├── pages/               # index(프로필 + 카드 그리드), blog/[...slug], tags/index, tags/[tag], about, rss.xml.js
+├── components/          # BaseHead, Header, Footer, ThemeToggle, PostCard(홈), PostList(태그 페이지), Tag, TableOfContents, PostNav, SeriesList, FormattedDate
 ├── consts.ts            # SITE_TITLE, SITE_DESCRIPTION, AUTHOR, SOCIAL(github/portfolio URL — 비어 있으면 링크 미표시)
 └── styles/global.css    # 디자인 토큰 + .prose 본문 스타일 (아래 "디자인 규약")
 public/og.png            # OG 기본 이미지 (sharp로 생성), favicon.svg
@@ -75,6 +75,10 @@ public/og.png            # OG 기본 이미지 (sharp로 생성), favicon.svg
 ## 디자인 규약
 
 톤은 **텍스트 중심 미니멀**. 글 목록에 이미지 없음, 본문 폭 좁게, 타이포 위주.
+
+- **홈(`/`)은 카드 그리드**: 프로필 헤더(이니셜 아바타, 한 줄 소개, GitHub/포트폴리오/RSS 버튼) → "최근 글" → 최신 글은
+  `bg-subtle` 배경의 큰 카드(`PostCard featured`), 나머지는 2열 카드(720px 이하 1열). 홈만 폭 62rem, 나머지 페이지는 `--measure`.
+  태그 페이지는 `PostList`(연도별 행 목록)를 유지한다. 카드에는 `description`이 그대로 노출되므로 글의 description을 한 문장으로 성실히 쓴다.
 
 - **색은 `global.css`의 토큰으로만 쓴다.** 새 색을 하드코딩하지 않는다.
 
