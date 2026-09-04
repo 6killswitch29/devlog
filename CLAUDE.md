@@ -109,12 +109,19 @@ public/og.png            # OG 기본 이미지 (sharp로 생성), favicon.svg
 ## 할 일 / 결정 필요
 
 - [ ] `astro.config.mjs`의 `site`를 실제 도메인으로 교체 (현재 `https://example.com`) — sitemap/RSS 링크에 쓰인다.
-- [ ] 배포 대상 결정: Vercel / Cloudflare Pages / GitHub Pages (모두 `pnpm build` 산출물 `dist/`를 그대로 올리면 된다).
+- [x] 배포 대상: **Vercel** (`vercel.json`, 정적 출력 `dist/`). GitHub `main` 푸시 → 프로덕션, PR → 프리뷰 배포.
 - [x] `tags` 필드 + 태그별 목록 페이지.
 - [x] 코드 하이라이트 테마, 다크 모드.
 - [ ] `src/consts.ts`의 `SOCIAL.github`, `SOCIAL.portfolio` URL 채우기 (비어 있으면 링크가 안 나온다).
 - [ ] `src/pages/about.astro`를 실제 소개로 교체 (상세 이력은 showreel 프로젝트가 담당).
 - [ ] 글이 50개를 넘으면 홈 목록 페이지네이션.
+
+## 배포 (Vercel)
+
+- Vercel 프로젝트가 GitHub `6killswitch29/devlog`에 연결돼 있다. `main`에 푸시하면 프로덕션, PR 브랜치는 프리뷰 URL이 생긴다.
+- 설정은 `vercel.json`(framework astro, `pnpm build`, `dist/`). 어댑터는 필요 없다(정적 출력).
+- `astro.config.mjs`의 `site`는 프로덕션 도메인과 같아야 sitemap·RSS·canonical 링크가 맞는다. 도메인을 바꾸면 함께 수정한다.
+- CLI: `vercel`(프리뷰), `vercel --prod`(프로덕션). `.vercel/`은 커밋하지 않는다.
 
 ## 하지 말 것
 

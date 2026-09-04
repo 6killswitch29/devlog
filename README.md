@@ -50,8 +50,9 @@ tags: [astro, setup]
 
 ## 배포
 
-`pnpm build` 결과물(`dist/`)을 Vercel, Cloudflare Pages, GitHub Pages 중 어디든 올리면 된다.
-배포 전 `astro.config.mjs`의 `site` 값을 실제 도메인으로 바꿔야 RSS/sitemap 링크가 맞는다.
+Vercel에 연결돼 있다. `main`에 푸시하면 프로덕션, PR을 열면 프리뷰 URL이 생긴다.
+설정은 `vercel.json`에 있고 정적 출력(`dist/`)이라 어댑터는 필요 없다.
+도메인을 바꾸면 `astro.config.mjs`의 `site` 값도 함께 바꿔야 RSS/sitemap 링크가 맞는다.
 
 ## 관련 프로젝트
 
