@@ -25,12 +25,16 @@ pnpm preview
 title: 'Astro로 블로그 세팅하기'
 description: '개발일지 블로그를 Astro 7 + MDX로 만든 기록'
 pubDate: 2026-09-04
+tags: [astro, setup]
+# draft: true          # 쓰는 중이면 켠다. dev에서만 보이고 빌드에서 빠진다.
+# series: '블로그 만들기'  # 연재물이면 같은 이름을 붙인다.
 ---
 
 본문...
 ```
 
-`pubDate` 기준으로 목록에 정렬되고, RSS(`/rss.xml`)와 sitemap이 자동 생성된다.
+`pubDate` 기준으로 홈 목록에 정렬되고, 태그 페이지(`/tags/<tag>/`), RSS(`/rss.xml`), sitemap이 자동 생성된다.
+디자인 규약(색 토큰, 폰트, 다크 모드)은 `CLAUDE.md`를 참고.
 
 ## 구조
 
@@ -39,8 +43,10 @@ pubDate: 2026-09-04
 | `src/content/blog/` | 글 (Markdown / MDX) |
 | `src/content.config.ts` | frontmatter 스키마 |
 | `src/pages/` | 라우트 (index, blog, about, rss) |
-| `src/layouts/BlogPost.astro` | 글 레이아웃 |
-| `src/consts.ts` | 사이트 제목·설명 |
+| `src/lib/posts.ts` | 글 목록·태그·시리즈 헬퍼 |
+| `src/layouts/Base.astro`, `BlogPost.astro` | 공통 셸, 글 레이아웃 |
+| `src/styles/global.css` | 디자인 토큰, 본문 스타일 |
+| `src/consts.ts` | 사이트 제목·설명·작성자·외부 링크 |
 
 ## 배포
 

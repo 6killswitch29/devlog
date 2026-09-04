@@ -1,86 +1,194 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
+import type { MarkdownHeading } from 'astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import PostNav from '../components/PostNav.astro';
+import SeriesList from '../components/SeriesList.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import Tag from '../components/Tag.astro';
+import type { Post } from '../lib/posts';
+import Base from './Base.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+interface Props {
+	post: Post;
+	headings: MarkdownHeading[];
+	older?: Post;
+	newer?: Post;
+	seriesPosts: Post[];
+}
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { post, headings, older, newer, seriesPosts } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, series, draft } = post.data;
+const hasToc = headings.some((h) => h.depth === 2 || h.depth === 3);
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<Base title={title} description={description}>
+	<div class="container post">
+		<article>
+			<header class="post-header">
+				<p class="meta muted">
+					<FormattedDate date={pubDate} />
+					{
+						updatedDate && (
+							<span>
+								· 수정 <FormattedDate date={updatedDate} />
+							</span>
+						)
+					}
+					{series && <span>· {series}</span>}
+					{draft && <span class="draft">초안</span>}
+				</p>
+				<h1>{title}</h1>
+				<p class="description muted">{description}</p>
+				<div class="tags">{tags.map((tag) => <Tag tag={tag} />)}</div>
+			</header>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+			{
+				hasToc && (
+					<details class="toc-inline">
+						<summary>목차</summary>
+						<TableOfContents headings={headings} />
+					</details>
+				)
+			}
+
+			<div class="prose">
+				<slot />
+			</div>
+
+			{series && <SeriesList name={series} posts={seriesPosts} currentId={post.id} />}
+			<PostNav older={older} newer={newer} />
+		</article>
+
+		{
+			hasToc && (
+				<aside class="toc-aside">
+					<div class="sticky">
+						<p class="toc-title muted">목차</p>
+						<TableOfContents headings={headings} />
 					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+				</aside>
+			)
+		}
+	</div>
+</Base>
+
+<style>
+	.post {
+		position: relative;
+	}
+	.post-header {
+		margin-bottom: var(--space-5);
+		padding-bottom: var(--space-4);
+		border-bottom: 1px solid var(--border);
+	}
+	.meta {
+		margin: 0 0 var(--space-2);
+		font-size: 0.875rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+	}
+	.draft {
+		border: 1px dashed var(--fg-muted);
+		border-radius: 4px;
+		padding: 0 0.4em;
+		font-size: 0.75rem;
+	}
+	h1 {
+		margin-bottom: var(--space-2);
+	}
+	.description {
+		margin: 0 0 var(--space-3);
+	}
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-1);
+	}
+
+	/* 목차: 넓은 화면은 본문 오른쪽 sticky, 그 아래는 본문 위 접힘 */
+	.toc-inline {
+		margin-bottom: var(--space-5);
+		padding: var(--space-2) var(--space-3);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		background: var(--bg-subtle);
+	}
+	.toc-inline summary {
+		cursor: pointer;
+		font-weight: 600;
+		font-size: 0.9375rem;
+	}
+	.toc-inline > :global(nav) {
+		margin-top: var(--space-2);
+	}
+	.toc-aside {
+		display: none;
+	}
+	@media (min-width: 1100px) {
+		.toc-inline {
+			display: none;
+		}
+		.toc-aside {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 100%;
+			width: 14rem;
+			margin-left: var(--space-5);
+			height: 100%;
+		}
+		.sticky {
+			position: sticky;
+			top: var(--space-5);
+			max-height: calc(100dvh - var(--space-6));
+			overflow-y: auto;
+		}
+		.toc-title {
+			margin: 0 0 var(--space-2);
+			font-size: 0.8125rem;
+			font-weight: 600;
+		}
+	}
+</style>
+
+<script>
+	// 코드 블록마다 복사 버튼을 붙인다.
+	for (const pre of document.querySelectorAll<HTMLPreElement>('.prose pre')) {
+		const code = pre.querySelector('code');
+		if (!code) continue;
+		const btn = document.createElement('button');
+		btn.type = 'button';
+		btn.className = 'copy-btn';
+		btn.textContent = '복사';
+		btn.setAttribute('aria-label', '코드 복사');
+		btn.addEventListener('click', async () => {
+			const text = code.innerText;
+			let ok = false;
+			try {
+				await navigator.clipboard.writeText(text);
+				ok = true;
+			} catch {
+				// 클립보드 API를 못 쓰는 환경(포커스 없음, 비보안 컨텍스트)용 폴백
+				const ta = document.createElement('textarea');
+				ta.value = text;
+				ta.setAttribute('readonly', '');
+				ta.style.position = 'fixed';
+				ta.style.opacity = '0';
+				document.body.appendChild(ta);
+				ta.select();
+				try {
+					ok = document.execCommand('copy');
+				} catch {}
+				ta.remove();
+			}
+			btn.textContent = ok ? '복사됨' : '실패';
+			if (ok) btn.dataset.copied = '';
+			setTimeout(() => {
+				btn.textContent = '복사';
+				delete btn.dataset.copied;
+			}, 1500);
+		});
+		pre.appendChild(btn);
+	}
+</script>

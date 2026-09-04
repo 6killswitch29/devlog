@@ -1,0 +1,53 @@
+---
+import { postUrl, type Post } from '../lib/posts';
+
+interface Props {
+	name: string;
+	posts: Post[];
+	currentId: string;
+}
+
+const { name, posts, currentId } = Astro.props;
+---
+
+{
+	posts.length > 1 && (
+		<aside class="series" aria-label="시리즈">
+			<p class="name">
+				<span class="muted">시리즈</span> {name}
+			</p>
+			<ol>
+				{posts.map((post) => (
+					<li class:list={{ current: post.id === currentId }}>
+						{post.id === currentId ? <span aria-current="page">{post.data.title}</span> : <a href={postUrl(post)}>{post.data.title}</a>}
+					</li>
+				))}
+			</ol>
+		</aside>
+	)
+}
+
+<style>
+	.series {
+		margin-top: var(--space-6);
+		padding: var(--space-3) var(--space-4);
+		background: var(--bg-subtle);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		font-size: 0.9375rem;
+	}
+	.name {
+		margin: 0 0 var(--space-2);
+		font-weight: 600;
+	}
+	ol {
+		margin: 0;
+		padding-left: 1.5em;
+	}
+	li {
+		margin: 0.2em 0;
+	}
+	.current {
+		font-weight: 600;
+	}
+</style>

@@ -1,0 +1,40 @@
+---
+import Tag from '../../components/Tag.astro';
+import Base from '../../layouts/Base.astro';
+import { getAllTags } from '../../lib/posts';
+
+const tags = await getAllTags();
+---
+
+<Base title="태그" description="태그별 글 목록">
+	<div class="container">
+		<h1>태그</h1>
+		{
+			tags.length === 0 ? (
+				<p class="muted">아직 태그가 없습니다.</p>
+			) : (
+				<ul>
+					{tags.map(({ tag, count }) => (
+						<li>
+							<Tag tag={tag} count={count} />
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
+</Base>
+
+<style>
+	h1 {
+		margin-bottom: var(--space-4);
+	}
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+	}
+</style>
