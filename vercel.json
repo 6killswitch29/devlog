@@ -1,10 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
+  "framework": "astro",
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @devlog/web build",
-  "outputDirectory": "apps/web/.next",
-  "redirects": [
-    { "source": "/blog", "destination": "/", "permanent": true }
-  ]
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist"
 }
