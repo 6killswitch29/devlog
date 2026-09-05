@@ -2,6 +2,20 @@
 
 @AGENTS.md
 
+> **⚠ 마이그레이션 진행 중 (2026-09-05~)**
+> `feat/next-migration` 브랜치에서 **Astro 7 → Next.js 16 + Tailwind v4** 전환과
+> 와이어프레임 구현이 진행 중이다. 새 코드는 **`apps/web/`** (pnpm 워크스페이스)에 있고,
+> 이 문서의 "스택 / 구조 / 디자인 규약"은 아직 **Astro 기준**이다.
+> 컷오버(GitHub #3 Phase 6~7) 때 이 문서를 Next 기준으로 다시 쓴다.
+> 설계·단계별 계획: 루트의 `MIGRATION.md`, 진행 상황: GitHub 이슈 #3 · #4.
+>
+> 전환 브랜치에서 작업할 때:
+> ```bash
+> export PATH="$HOME/.nvm/versions/node/v22.22.3/bin:$PATH"
+> pnpm --filter @devlog/web dev      # Next 개발 서버 (:3000)
+> pnpm --filter @devlog/web build    # 정적 빌드
+> ```
+
 ## 프로젝트 목적
 
 김용현의 개발일지(학습 기록, 트러블슈팅, 프로젝트 회고)를 쌓는 정적 블로그.
