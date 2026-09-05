@@ -1,10 +1,12 @@
-# build output
-dist/
-# generated types
-.astro/
-
 # dependencies
 node_modules/
+
+# next
+.next/
+next-env.d.ts
+
+# typescript
+*.tsbuildinfo
 
 # logs
 npm-debug.log*
@@ -12,9 +14,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-
 # environment variables
 .env
+.env*.local
 .env.production
 
 # macOS-specific files
@@ -24,6 +26,4 @@ pnpm-debug.log*
 .idea/
 
 # vercel
-.vercel/
 .vercel
-.env*
