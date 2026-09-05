@@ -18,7 +18,7 @@
       "permanent": true
     },
     {
-      "source": "/:path((?!_next)(?:[^/]+/)*[^/.]+)",
+      "source": "/:path((?!_next|api)(?:[^/]+/)*[^/.]+)",
       "destination": "/:path/",
       "permanent": true
     }

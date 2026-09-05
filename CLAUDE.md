@@ -62,16 +62,20 @@ apps/web/
     │   ├── series/page.tsx      # 시리즈 인덱스
     │   ├── tags/page.tsx, tags/[tag]/page.tsx
     │   ├── rss.xml/route.ts, search.json/route.ts, sitemap.ts, robots.ts
+    │   ├── admin/               # 글 편집기(로그인 필요, 동적). actions.ts = 미리보기 서버 액션
+    │   ├── api/admin/           # OAuth 로그인·콜백·로그아웃, 저장(커밋)
     │   ├── not-found.tsx, globals.css
     ├── components/
     │   ├── ui/       Shell SidebarProfile SidebarNav SidebarFooter TagChips ListSidebar FormattedDate
-    │   ├── post/     PostListView Toc SeriesNav PostNav
+    │   ├── post/     PostListView Toc SeriesNav PostNav PostAside
+    │   ├── admin/    PostEditor (마크다운 텍스트 편집 + 미리보기)
     │   └── client/   ThemeToggle SearchOverlay SearchTrigger CopyButtons ReadingProgress
     ├── lib/
     │   ├── schema.ts        글 frontmatter zod 스키마
     │   ├── posts.ts         getPosts/getPost/getAllTags/getSeries/getAllSeries/getPostSummaries/postUrl
     │   ├── projects.ts      프로젝트 스키마 + getProjects
     │   ├── mdx.ts           렌더 파이프라인(플러그인 체인, 코드블록 title)
+    │   ├── admin/           config·session(JWE 쿠키)·github(Contents API)·post-file·frontmatter
     │   ├── toc.ts           h2·h3 수집 (rehype-slug가 붙인 id를 그대로 쓴다)
     │   └── reading-time.ts  분당 500자 + 코드블록당 15초
     └── consts.ts            SITE_TITLE/DESCRIPTION/URL, AUTHOR, PROFILE, SOCIAL, ABOUT
@@ -173,6 +177,26 @@ featured: true        # 맨 위 큰 카드로
 - [ ] 프로젝트(`content/projects/`)를 실제로 채울지, showreel과 역할을 어떻게 나눌지.
 - [ ] 글이 50개를 넘으면 홈 목록 페이지네이션 + 검색 인덱스 분리.
 
+## 글 편집기 (`/admin`)
+
+브라우저에서 글을 쓰고 저장하면 **저장소에 커밋**된다. 마크다운을 텍스트 그대로 다루므로
+파일이 우리가 쓴 그대로 남는다(코드블록 `title=`, GFM 표 포함).
+
+- 로그인: GitHub OAuth. `ADMIN_GITHUB_LOGIN` 계정 하나만 통과한다. 세션은 암호화된 JWT 쿠키
+  하나가 전부고 서버에 저장하는 것이 없다 → **DB 없음**.
+- 저장: 로그인한 사용자의 토큰으로 커밋하므로 **본인 이름으로 커밋**된다. sha를 함께 보내
+  다른 곳에서 먼저 고쳤으면 409로 막는다. 저장 전에 zod 스키마로 frontmatter를 검증한다.
+- 미리보기: `app/admin/actions.ts`의 서버 액션이 **글 페이지와 같은 파이프라인**으로 렌더한
+  RSC 엘리먼트를 돌려준다(렌더러를 두 벌 만들지 않는다).
+- 환경변수 4개: `ADMIN_GITHUB_LOGIN` `ADMIN_SESSION_SECRET` `GITHUB_OAUTH_CLIENT_ID`
+  `GITHUB_OAUTH_CLIENT_SECRET`. 하나라도 없으면 로그인 화면이 안내만 하고 아무것도 하지 않는다.
+- GitHub OAuth App은 콜백 URL이 하나뿐이다 → 프로덕션 도메인 기준으로 등록한다.
+  로컬에서 로그인까지 시험하려면 콜백이 localhost인 앱을 따로 만든다.
+- 이미지 업로드는 아직 없다. `public/` 아래에 직접 넣는다.
+
+> Keystatic 같은 git 백엔드 CMS도 검토했지만, 저장할 때 본문을 자기 방언으로 다시 써서
+> (GFM 표 → `{% table %}`, 코드블록 `title=` 소실) 채택하지 않았다. 근거는 이슈 #6 참고.
+
 ## 배포 (Vercel)
 
 - Vercel 프로젝트가 GitHub `6killswitch29/devlog`에 연결돼 있다. **Root Directory는 `apps/web`**,
@@ -191,6 +215,7 @@ featured: true        # 맨 위 큰 카드로
 - 애니메이션 라이브러리(motion 등)를 넣지 않는다 (포트폴리오 사이트 `../showreel`의 역할).
 - 색을 하드코딩하지 않는다. `globals.css` 토큰과 Tailwind 유틸(`text-fg-muted` 등)로만 쓴다.
 - 추가 웹폰트를 넣지 않는다. `@tailwindcss/typography`도 쓰지 않는다(한글 튜닝을 전부 다시 덮어야 한다).
-- 서버 런타임이 필요한 기능(ISR·미들웨어·DB)을 넣지 않는다. 전 라우트 정적을 유지한다.
-  `cacheComponents`/`use cache`도 켜지 않는다.
+- **공개 페이지(글·목록·태그·소개)는 100% 정적**을 유지한다. ISR·미들웨어·DB를 넣지 않고
+  `cacheComponents`/`use cache`도 켜지 않는다. 동적인 것은 `/admin`과 `/api/admin/*`뿐이고,
+  이들은 빌드 산출물에서 ƒ로 표시된다(정적 라우트가 ƒ가 되면 뭔가 잘못된 것이다).
 - `.md` 글을 MDX로 파싱하도록 바꾸지 않는다 (본문의 `{`, `<` 한 글자에 빌드가 깨진다).
