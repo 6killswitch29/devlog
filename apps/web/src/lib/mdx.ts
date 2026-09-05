@@ -43,14 +43,19 @@ const transformerTitle: ShikiTransformer = {
 };
 
 export async function renderPost(post: Post) {
+	return renderMarkdown(post.body, post.format);
+}
+
+/** 본문 문자열을 렌더한다. 글 페이지와 관리자 미리보기가 같은 경로를 쓴다. */
+export async function renderMarkdown(body: string, format: 'md' | 'mdx') {
 	const toc: TocItem[] = [];
 
 	const { content } = await compileMDX({
-		source: post.body,
+		source: body,
 		options: {
 			parseFrontmatter: false,
 			mdxOptions: {
-				format: post.format,
+				format,
 				remarkPlugins: [remarkGfm, remarkCodeMeta],
 				remarkRehypeOptions: {
 					// 각주 섹션 라벨. Astro의 satteri({ features: { gfm: { footnotes } } })와 같은 문구.
@@ -58,7 +63,7 @@ export async function renderPost(post: Post) {
 					footnoteBackLabel: (referenceIndex: number) => `본문 ${referenceIndex + 1}번 참조로 돌아가기`,
 				},
 				rehypePlugins: [
-					...(post.format === 'md' ? [rehypeRaw] : []),
+					...(format === 'md' ? [rehypeRaw] : []),
 					rehypeSlug,
 					[
 						rehypeShiki,
