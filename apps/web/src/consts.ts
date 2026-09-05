@@ -15,7 +15,7 @@ export const PROFILE = {
 
 // TODO: 실제 URL로 채운다. 빈 문자열이면 해당 링크는 렌더하지 않는다.
 export const SOCIAL = {
-	github: '',
+	github: 'https://github.com/6killswitch29',
 	portfolio: '', // showreel 배포 주소
 	email: '',
 };
