@@ -121,8 +121,11 @@ featured: true        # 맨 위 큰 카드로
 
 톤은 **텍스트 중심 미니멀**. 와이어프레임(`개인 개발 블로그 와이어프레임.pdf`)을 따른다.
 
-- **2단 셸(`Shell.tsx`)**: 좌측 사이드바(17rem, 점선 세로 구분선) + 우측 본문. 1024px 아래에서는
-  사이드바가 본문 위로 쌓인다. 전체 폭 70rem, 글 본문은 `max-w-measure`(42rem).
+- **2단 셸(`Shell.tsx`)**: 좌측 사이드바(17rem, 점선 세로 구분선) + 우측 본문. 전체 폭 70rem,
+  글 본문은 `max-w-measure`(42rem).
+  **1024px 아래에서는 사이드바가 본문 위의 가로 바**가 된다 — 프로필+검색 한 줄, 네비 가로 한 줄(활성은 밑줄),
+  태그 칩 가로 스크롤 한 줄, 링크+토글 한 줄. 세로로 쌓으면 태그를 다 지나야 본문이 나온다.
+  글 화면의 목차·시리즈는 모바일에서 `<details>`로 접힌다(`PostAside.tsx`).
   - 목록·프로젝트·소개 사이드바(`ListSidebar`): 프로필 → 검색 버튼(⌘K) → 네비(개수 배지) → TAGS 칩 → 하단 링크·테마 토글.
     항목이 0개인 메뉴(시리즈·프로젝트)는 내보내지 않는다.
   - 글 사이드바: `← 글 목록` → ON THIS PAGE(스크롤 스파이) → 시리즈 목차 → 하단 링크·테마 토글.
@@ -174,8 +177,13 @@ featured: true        # 맨 위 큰 카드로
 
 - Vercel 프로젝트가 GitHub `6killswitch29/devlog`에 연결돼 있다. **Root Directory는 `apps/web`**,
   framework는 Next.js. `main`에 푸시하면 프로덕션, PR 브랜치는 프리뷰 URL이 생긴다.
-- `apps/web/vercel.json`에 리다이렉트(`/blog`, `/sitemap-index.xml`)가 있다. Vercel 쪽에서 한 번에 보내
-  `trailingSlash` 정규화로 두 번 튀는 것을 막는다. `next.config.ts`에도 같은 리다이렉트가 있다(로컬용).
+- **끝 슬래시 정규화는 Vercel이 한다.** `next.config.ts`는 `trailingSlash: true`(빌드 산출물·내부 링크용)에
+  `skipTrailingSlashRedirect: true`를 같이 켜 두었다. Next이 정규화를 하면 그 규칙이 **내부 리다이렉트라
+  항상 맨 앞**에 붙어서 `/blog` → `/blog/` → `/`로 두 번 튄다.
+  `apps/web/vercel.json`의 `redirects` 배열이 순서대로 먼저 평가되므로, 거기서 `/blog`·`/sitemap-index.xml`을
+  먼저 처리하고 **맨 마지막에 정규화 규칙**(`/:path((?!_next)(?:[^/]+/)*[^/.]+)` → `/:path/`)을 둔다.
+  확인 방법: `npx vercel build` 후 `.vercel/output/config.json`의 `routes` 순서를 본다.
+- `next.config.ts`에도 같은 리다이렉트가 있다(vercel.json이 안 먹는 로컬 dev용).
 - `.vercel/`은 커밋하지 않는다.
 
 ## 하지 말 것

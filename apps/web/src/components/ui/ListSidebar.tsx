@@ -17,8 +17,11 @@ export default async function ListSidebar({ activeTag }: { activeTag?: string } 
 
 	return (
 		<>
-			<SidebarProfile />
-			<SearchTrigger />
+			{/* 모바일에서는 프로필과 검색을 한 줄에 둔다 */}
+			<div className="flex items-center justify-between gap-3 lg:block lg:space-y-8">
+				<SidebarProfile />
+				<SearchTrigger />
+			</div>
 			<SidebarNav
 				items={[
 					{ href: '/', label: '글', count: posts.length },

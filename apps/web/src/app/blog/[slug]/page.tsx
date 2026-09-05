@@ -2,9 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import CopyButtons from '@/components/client/CopyButtons';
 import ReadingProgress from '@/components/client/ReadingProgress';
+import PostAside from '@/components/post/PostAside';
 import PostNav from '@/components/post/PostNav';
-import SeriesNav from '@/components/post/SeriesNav';
-import Toc from '@/components/post/Toc';
 import Shell from '@/components/ui/Shell';
 import SidebarFooter from '@/components/ui/SidebarFooter';
 import { renderPost } from '@/lib/mdx';
@@ -62,14 +61,12 @@ export default async function BlogPostPage({ params }: PageProps<'/blog/[slug]'>
 						<a href="/" className="text-[0.875rem] text-fg-muted hover:text-fg hover:no-underline">
 							← 글 목록
 						</a>
-						<Toc items={toc} />
-						{post.data.series && (
-							<SeriesNav
-								name={post.data.series}
-								posts={[...seriesPosts].sort((a, b) => (a.series!.index ?? 0) - (b.series!.index ?? 0))}
-								currentId={post.id}
-							/>
-						)}
+						<PostAside
+							toc={toc}
+							series={post.data.series}
+							seriesPosts={[...seriesPosts].sort((a, b) => (a.series!.index ?? 0) - (b.series!.index ?? 0))}
+							currentId={post.id}
+						/>
 						<SidebarFooter />
 					</>
 				}

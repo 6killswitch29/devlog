@@ -8,7 +8,7 @@ export default function SearchTrigger() {
 		<button
 			type="button"
 			onClick={() => window.dispatchEvent(new CustomEvent(SEARCH_EVENT))}
-			className="flex w-full items-center gap-2 rounded-full border border-border px-3 py-1.5 text-[0.8125rem] text-fg-muted hover:border-accent hover:text-fg"
+			className="flex w-auto shrink-0 items-center gap-2 lg:w-full rounded-full border border-border px-3 py-1.5 text-[0.8125rem] text-fg-muted hover:border-accent hover:text-fg"
 		>
 			<span aria-hidden="true">⌕</span>
 			<span>검색</span>
