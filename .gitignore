@@ -27,3 +27,7 @@ pnpm-debug.log*
 .vercel/
 .vercel
 .env*
+
+# next
+.next/
+next-env.d.ts
