@@ -1,3 +1,4 @@
+import SearchTrigger from '@/components/client/SearchTrigger';
 import SidebarFooter from './SidebarFooter';
 import SidebarNav from './SidebarNav';
 import SidebarProfile from './SidebarProfile';
@@ -11,6 +12,7 @@ export default async function ListSidebar({ activeTag }: { activeTag?: string } 
 	return (
 		<>
 			<SidebarProfile />
+			<SearchTrigger />
 			<SidebarNav
 				items={[
 					{ href: '/', label: '글', count: posts.length },

@@ -331,6 +331,23 @@
 		display: block;
 		min-width: max-content;
 	}
+	/* ```ts title="alloc.rs" 로 적은 파일명 헤더 */
+	.prose pre[data-title] {
+		padding-top: 0;
+	}
+	.prose pre[data-title]::before {
+		content: attr(data-title);
+		position: sticky;
+		left: 0;
+		display: block;
+		margin: 0 calc(var(--space-4) * -1) var(--space-3);
+		padding: 0.4em var(--space-4);
+		border-bottom: 1px solid var(--border);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--fg-muted);
+	}
+
 	/* 코드 블록 복사 버튼 (CopyButtons.tsx가 주입) */
 	.copy-btn {
 		position: absolute;

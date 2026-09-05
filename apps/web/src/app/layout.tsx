@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import SearchOverlay from '@/components/client/SearchOverlay';
 import { AUTHOR, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/consts';
 import './globals.css';
 
@@ -37,7 +38,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 			<head>
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 			</head>
-			<body>{children}</body>
+			<body>
+				{children}
+				<SearchOverlay />
+			</body>
 		</html>
 	);
 }
