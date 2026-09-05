@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { AUTHOR, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/consts';
-import ThemeToggle from '@/components/client/ThemeToggle';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -9,6 +8,19 @@ export const metadata: Metadata = {
 	description: SITE_DESCRIPTION,
 	authors: [{ name: AUTHOR }],
 	icons: { icon: '/favicon.svg' },
+	alternates: {
+		canonical: '/',
+		types: { 'application/rss+xml': [{ url: '/rss.xml', title: SITE_TITLE }] },
+	},
+	openGraph: {
+		type: 'website',
+		siteName: SITE_TITLE,
+		locale: 'ko_KR',
+		title: SITE_TITLE,
+		description: SITE_DESCRIPTION,
+		images: ['/og.png'],
+	},
+	twitter: { card: 'summary_large_image' },
 };
 
 /**
@@ -25,12 +37,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 			<head>
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 			</head>
-			<body className="flex min-h-dvh flex-col">
-				<div className="container flex justify-end pt-4">
-					<ThemeToggle />
-				</div>
-				<main className="container flex-1 py-8">{children}</main>
-			</body>
+			<body>{children}</body>
 		</html>
 	);
 }

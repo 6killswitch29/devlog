@@ -331,6 +331,32 @@
 		display: block;
 		min-width: max-content;
 	}
+	/* 코드 블록 복사 버튼 (CopyButtons.tsx가 주입) */
+	.copy-btn {
+		position: absolute;
+		top: var(--space-2);
+		right: var(--space-2);
+		padding: 0.15em 0.6em;
+		font-size: 0.75rem;
+		font-family: var(--font-sans);
+		line-height: 1.6;
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		background: var(--bg);
+		color: var(--fg-muted);
+		cursor: pointer;
+		opacity: 0;
+		transition: opacity 0.15s;
+	}
+	.prose pre:hover .copy-btn,
+	.copy-btn:focus-visible,
+	.copy-btn[data-copied] {
+		opacity: 1;
+	}
+	.copy-btn:hover {
+		color: var(--fg);
+	}
+
 	.shiki,
 	.shiki span {
 		color: var(--shiki-light);

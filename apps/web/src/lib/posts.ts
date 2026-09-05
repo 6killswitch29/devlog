@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
+import { readingMinutes } from './reading-time';
 import { postSchema, type PostData } from './schema';
 
 /** 글 원본 디렉터리. 파일명(확장자 제외)이 URL slug가 된다. */
@@ -15,11 +16,14 @@ export interface Post {
 	format: 'md' | 'mdx';
 }
 
-/** 빌드 한 번에 파일을 여러 번 읽지 않도록 모듈 스코프에 캐시한다. */
+/**
+ * 빌드 한 번에 파일을 여러 번 읽지 않도록 캐시한다.
+ * dev에서는 캐시하지 않는다 — 글을 새로 만들거나 고쳤을 때 서버를 다시 띄우지 않아도 되게.
+ */
 let cache: Post[] | null = null;
 
 function loadAll(): Post[] {
-	if (cache) return cache;
+	if (cache && process.env.NODE_ENV === 'production') return cache;
 
 	const files = fs.readdirSync(CONTENT_DIR).filter((f) => /\.mdx?$/.test(f));
 	cache = files.map((file) => {
@@ -96,4 +100,42 @@ export async function getAllSeries(): Promise<{ name: string; count: number }[]>
 
 export function postUrl(post: Post): string {
 	return `/blog/${post.id}/`;
+}
+
+/** 목록·카드에서 쓰는 직렬화 가능한 요약. 클라이언트 컴포넌트로 넘길 수 있다. */
+export interface PostSummary {
+	id: string;
+	url: string;
+	title: string;
+	description: string;
+	/** YYYY-MM-DD */
+	date: string;
+	minutes: number;
+	tags: string[];
+	draft: boolean;
+	series?: { name: string; index: number; total: number };
+}
+
+/** 최신순 요약 목록. 시리즈 배지(2/5)를 위해 시리즈별 순번을 미리 계산해 둔다. */
+export async function getPostSummaries(): Promise<PostSummary[]> {
+	const posts = await getPosts();
+
+	const seriesIndex = new Map<string, { index: number; total: number }>();
+	const names = new Set(posts.map((p) => p.data.series).filter((n): n is string => Boolean(n)));
+	for (const name of names) {
+		const ordered = await getSeries(name);
+		ordered.forEach((post, i) => seriesIndex.set(post.id, { index: i + 1, total: ordered.length }));
+	}
+
+	return posts.map((post) => ({
+		id: post.id,
+		url: postUrl(post),
+		title: post.data.title,
+		description: post.data.description,
+		date: post.data.pubDate.toISOString().slice(0, 10),
+		minutes: readingMinutes(post.body),
+		tags: post.data.tags,
+		draft: post.data.draft,
+		series: post.data.series ? { name: post.data.series, ...seriesIndex.get(post.id)! } : undefined,
+	}));
 }
