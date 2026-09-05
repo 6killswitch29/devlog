@@ -1,8 +1,10 @@
 ---
-title: '스타일 가이드 — 마크다운 요소 점검용'
-description: '블로그 스타일 회귀 확인용 글. draft라서 배포에는 포함되지 않는다.'
+title: 스타일 가이드 — 마크다운 요소 점검용
+description: 블로그 스타일 회귀 확인용 글. draft라서 배포에는 포함되지 않는다.
 pubDate: 2026-09-05
-tags: [meta, astro]
+tags:
+  - meta
+  - astro
 draft: true
 ---
 
