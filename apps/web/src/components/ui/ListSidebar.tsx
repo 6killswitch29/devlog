@@ -31,7 +31,7 @@ export default async function ListSidebar({ activeTag }: { activeTag?: string } 
 					{ href: '/about', label: '소개' },
 				]}
 			/>
-			<TagChips tags={tags} total={posts.length} active={activeTag} />
+			<TagChips tags={tags} total={posts.length} active={activeTag} limit={12} />
 			<SidebarFooter />
 		</>
 	);
